@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 
 const formulas = [
   "Y = β₀ + β₁X + ε",
@@ -14,31 +14,33 @@ const formulas = [
 ];
 
 export const FloatingFormulas = () => {
+  const { scrollYProgress } = useScroll();
+  // We'll create a spiral effect twisting based on scroll position!
+  const spin = useTransform(scrollYProgress, [0, 1], [0, 360]);
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
-      {formulas.map((formula, idx) => (
-        <motion.div
-           key={idx}
-           className="absolute text-slate-800/[0.03] font-serif text-4xl sm:text-6xl md:text-8xl font-bold whitespace-nowrap"
-           initial={{ 
-             top: `${(idx * 12)}%`, 
-             left: `${(idx % 2 === 0 ? -10 : 70) + (Math.random() * 10)}%`,
-             rotate: Math.random() * 20 - 10
-           }}
-           animate={{
-             x: [0, (idx % 2 === 0 ? 100 : -100) + Math.random() * 100, 0],
-             y: [0, Math.random() * 100 - 50, 0],
-             rotate: [Math.random() * 10 - 5, Math.random() * 20 - 10, Math.random() * 10 - 5]
-           }}
-           transition={{
-             duration: 40 + (idx * 5) + Math.random() * 10,
-             repeat: Infinity,
-             ease: "linear"
-           }}
-        >
-          {formula}
-        </motion.div>
-      ))}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none perspective-1000">
+      {formulas.map((formula, idx) => {
+        // Vary rotation speed and direction
+        const multiplier = idx % 2 === 0 ? 1 : -1;
+        const spinTransform = useTransform(scrollYProgress, [0, 1], [0, 360 * multiplier * ((idx+1)*0.5)]);
+        const yTransform = useTransform(scrollYProgress, [0, 1], [0, idx * 50]);
+
+        return (
+          <motion.div
+            key={idx}
+            className="absolute text-slate-800/[0.04] font-serif text-3xl sm:text-5xl md:text-7xl font-bold whitespace-nowrap"
+            style={{
+              top: `${5 + (idx * 10)}%`,
+              left: `${(idx % 2 === 0 ? 5 : 65) + (Math.random() * 15)}%`,
+              rotateZ: spinTransform,
+              y: yTransform
+            }}
+          >
+            {formula}
+          </motion.div>
+        );
+      })}
     </div>
   );
 };

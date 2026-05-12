@@ -2,14 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 const terminalSteps = [
-  "> INITIALIZING SPSS PROCESSOR...",
-  "> IMPORTING DATASET (N=1452)....",
-  "> CHECKING ASSUMPTIONS (HETEROSKEDASTICITY: NORMAL).",
-  "> RUNNING OLS REGRESSION (DEPENDENT: Y).",
-  "> ESTIMATING COEFFICIENTS (β)...",
-  "> R-SQUARED: 0.842 | F-STATISTIC: 124.5",
-  "========================================",
-  "> RESULTS COMPILED SUCCESSFULLY."
+  "GET FILE='C:\\Data\\research_dataset.sav'.",
+  "DATASET NAME DataSet1 WINDOW=FRONT.",
+  " ",
+  "FREQUENCIES VARIABLES=Gender Education Age",
+  "  /STATISTICS=STDDEV VARIANCE MEAN MEDIAN",
+  "  /ORDER=ANALYSIS.",
+  " ",
+  "REGRESSION",
+  "  /MISSING LISTWISE",
+  "  /STATISTICS COEFF OUTS R ANOVA",
+  "  /CRITERIA=PIN(.05) POUT(.10)",
+  "  /NOORIGIN",
+  "  /DEPENDENT Performance",
+  "  /METHOD=ENTER Age Education Experience.",
+  " ",
+  "==> Regression model executed successfully.",
+  "    R Square = .642, F(3, 150) = 45.2, p < .001"
 ];
 
 export const AnimatedTerminal = () => {
@@ -21,7 +30,7 @@ export const AnimatedTerminal = () => {
       const timer = setTimeout(() => {
         setLines(prev => [...prev, terminalSteps[currentIndex]]);
         setCurrentIndex(prev => prev + 1);
-      }, Math.random() * 800 + 400); // Random delay between 400ms to 1200ms
+      }, terminalSteps[currentIndex] === " " ? 100 : Math.random() * 300 + 100); // Faster typing
       return () => clearTimeout(timer);
     } else {
       // Loop the animation after a delay
@@ -34,7 +43,7 @@ export const AnimatedTerminal = () => {
   }, [currentIndex]);
 
   return (
-    <div className="py-4 font-mono text-[10px] md:text-xs text-teal-600 bg-teal-50/50 p-4 rounded-lg mt-6 border border-teal-100 h-48 overflow-hidden relative">
+    <div className="py-4 font-mono text-[10px] md:text-xs text-teal-600 bg-teal-50/50 p-4 rounded-lg mt-6 border border-teal-100 h-64 overflow-hidden relative flex flex-col justify-end">
       <div className="space-y-1">
         {lines.map((line, idx) => (
           <motion.div 
